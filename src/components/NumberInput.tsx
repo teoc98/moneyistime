@@ -7,6 +7,7 @@ interface NumberInputProps {
   setValue?: Setter<number>;
   placeholder?: string;
   labelTemplate?: string;
+  disabled?: boolean;
 }
 
 const NumberInput: Component<NumberInputProps> = (props) => {
@@ -18,6 +19,7 @@ const NumberInput: Component<NumberInputProps> = (props) => {
       setValue={props.setValue}
       labelTemplate={props.labelTemplate}
       placeholder={props.placeholder}
+      disabled={props.disabled}
     />
   );
 };

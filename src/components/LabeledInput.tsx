@@ -24,7 +24,7 @@ const LabeledInput: Component<LabeledInputProps> = (props): JSX.Element => {
     const idx = template.indexOf("{value}");
     return {
       before: template.slice(0, idx),
-      value: formatValue(props.value()),
+      value: formatValue(props.value() || 0),
       after: template.slice(idx + 7),
     };
   };
@@ -43,10 +43,12 @@ const LabeledInput: Component<LabeledInputProps> = (props): JSX.Element => {
         min={props.min ?? 0}
         max={props.max}
         step={props.step ?? 1}
-        value={props.value()}
+        value={props.value() || 0}
         disabled={props.disabled}
         placeholder={props.placeholder}
-        onInput={(e) => props.setValue?.(parseFloat(e.currentTarget.value))}
+        onInput={(e) =>
+          props.setValue?.(parseFloat(e.currentTarget.value) || 0)
+        }
       />
     </div>
   );
