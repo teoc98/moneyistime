@@ -1,4 +1,5 @@
 import type { Component, JSX, Accessor, Setter } from "solid-js";
+import LabeledInput from "./LabeledInput";
 
 interface SliderProps {
   id: string;
@@ -12,31 +13,18 @@ interface SliderProps {
 }
 
 const Slider: Component<SliderProps> = (props): JSX.Element => {
-  const formatValue = (val: number): string => {
-    const step = props.step ?? 1;
-    return step < 1 ? val.toFixed(2) : val.toString();
-  };
-
   return (
-    <div>
-      <label for={props.id}>
-        {(props.labelTemplate ?? "{value}").replace(
-          "{value}",
-          formatValue(props.value()),
-        )}
-      </label>
-      <input
-        type="range"
-        id={props.id}
-        name={props.id}
-        min={props.min ?? 0}
-        max={props.max}
-        step={props.step ?? 1}
-        value={props.value()}
-        disabled={props.disabled}
-        onInput={(e) => props.setValue?.(parseFloat(e.currentTarget.value))}
-      />
-    </div>
+    <LabeledInput
+      id={props.id}
+      type="range"
+      value={props.value}
+      setValue={props.setValue}
+      labelTemplate={props.labelTemplate}
+      min={props.min}
+      max={props.max}
+      step={props.step}
+      disabled={props.disabled}
+    />
   );
 };
 
