@@ -3,11 +3,12 @@ import type { Component, JSX, Accessor, Setter } from "solid-js";
 interface SliderProps {
   id: string;
   value: Accessor<number>;
-  setValue: Setter<number>;
+  setValue?: Setter<number>;
   min?: number;
   max?: number;
   step?: number;
   labelTemplate?: string;
+  disabled?: boolean;
 }
 
 const Slider: Component<SliderProps> = (props): JSX.Element => {
@@ -32,7 +33,8 @@ const Slider: Component<SliderProps> = (props): JSX.Element => {
         max={props.max}
         step={props.step ?? 1}
         value={props.value()}
-        onInput={(e) => props.setValue(parseFloat(e.currentTarget.value))}
+        disabled={props.disabled}
+        onInput={(e) => props.setValue?.(parseFloat(e.currentTarget.value))}
       />
     </div>
   );
