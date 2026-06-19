@@ -14,10 +14,18 @@ const App: Component = () => {
   const [timeOff, setTimeOff] = createSignal(0);
 
   const [yearlySalary, setYearlySalary] = createSignal(42000);
-  const [monthlySalary, setMonthlySalary] = createSignal(0);
   const [monthsPerYear, setMonthsPerYear] = createSignal(12);
   const [yearlyBonus, setYearlyBonus] = createSignal(0);
   const [overtimePayHour, setOvertimePayHour] = createSignal(0);
+
+  const monthlySalary = createMemo(() => yearlySalary() / monthsPerYear());
+
+  const setMonthlySalary = (value: number | ((prev: number) => number)) => {
+    const newValue =
+      typeof value === "function" ? value(monthlySalary()) : value;
+    setYearlySalary(newValue * monthsPerYear());
+    return newValue;
+  };
 
   const weeklyHours = createMemo(() => workingHoursDay() * daysPerWeek());
 
@@ -37,9 +45,9 @@ const App: Component = () => {
           <NumberInput
             id="monthly_salary"
             value={monthlySalary}
+            setValue={setMonthlySalary}
             labelTemplate={`salary of {value} ${currency}/month`}
             placeholder="Monthly salary"
-            disabled
           />
           <NumberInput
             id="months_per_year"
