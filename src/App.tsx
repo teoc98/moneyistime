@@ -175,7 +175,10 @@ const App: Component = () => {
 
   return (
     <>
-      <h1>Money is time 💸 = ⏳</h1>
+      <hgroup>
+        <h1>Money is time 💸 = ⏳</h1>
+        <p>Find out how much time your money is worth</p>
+      </hgroup>
       <article>
         <div>
           <h3>Net income 💵</h3>
