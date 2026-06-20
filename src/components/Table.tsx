@@ -1,15 +1,13 @@
 import type { Component } from "solid-js";
 import { For } from "solid-js";
 
-type ColumnAlignment = "left" | "center" | "right";
+import type { Formatter } from "../types/Formatter";
 
-interface ColumnFormat {
-  format?: (value: number) => string;
-}
+type ColumnAlignment = "left" | "center" | "right";
 
 interface TableProps {
   data: Array<Array<string | (() => number)>>;
-  columnFormat?: Array<ColumnFormat | undefined>;
+  columnFormat?: Array<Formatter | undefined>;
   columnAlign?: Array<ColumnAlignment | undefined>;
   class?: string;
 }
