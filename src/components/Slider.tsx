@@ -1,5 +1,6 @@
 import type { Component, JSX, Accessor, Setter } from "solid-js";
 import LabeledInput from "./LabeledInput";
+import type { Formatter } from "../Formatter";
 
 interface SliderProps {
   id: string;
@@ -10,6 +11,7 @@ interface SliderProps {
   step?: number;
   labelTemplate?: string;
   disabled?: boolean;
+  formatter?: Formatter;
 }
 
 const Slider: Component<SliderProps> = (props): JSX.Element => {
@@ -24,6 +26,7 @@ const Slider: Component<SliderProps> = (props): JSX.Element => {
       max={props.max}
       step={props.step}
       disabled={props.disabled}
+      formatter={props.formatter}
     />
   );
 };

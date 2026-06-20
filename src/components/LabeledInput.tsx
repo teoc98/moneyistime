@@ -1,5 +1,7 @@
 import type { Component, JSX, Accessor, Setter } from "solid-js";
 
+import type { Formatter } from "../types/Formatter";
+
 interface LabeledInputProps {
   id: string;
   type: "range" | "number";
@@ -11,12 +13,12 @@ interface LabeledInputProps {
   step?: number;
   disabled?: boolean;
   placeholder?: string;
+  formatter?: Formatter;
 }
 
 const LabeledInput: Component<LabeledInputProps> = (props): JSX.Element => {
   const formatValue = (val: number): string => {
-    const step = props.step ?? 1;
-    return step < 1 ? val.toFixed(2) : val.toString();
+    return props.formatter?.format(val) ?? val.toString();
   };
 
   const parts = () => {
