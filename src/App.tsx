@@ -48,6 +48,7 @@ const App: Component = () => {
   const [overtimeHoursPerWeek, setOvertimeHoursPerWeek] = createSignal(5);
   const [daysOffPerYear, setDaysOffPerYear] = createSignal(25);
   const [timeOffPerYear, setTimeOffPerYear] = createSignal(0);
+  const [festivitiesPerYear, setFestivitiesPerYear] = createSignal(12);
 
   const [yearlySalary, setYearlySalary] = createSignal(42000);
   const [monthsPerYear, setMonthsPerYear] = createSignal(12);
@@ -69,7 +70,7 @@ const App: Component = () => {
   const daysPerWeek = 7;
 
   const workingDaysPerYear = () =>
-    (daysPerYear * workingDaysPerWeek()) / daysPerWeek;
+    (daysPerYear * workingDaysPerWeek()) / daysPerWeek - festivitiesPerYear();
   const actualWorkingDaysPerYear = () =>
     workingDaysPerYear() - daysOffPerYear();
   const workingHoursPerYear = () =>
@@ -217,6 +218,13 @@ const App: Component = () => {
               setValue={setTimeOffPerYear}
               labelTemplate="{value} hours off/year"
               placeholder="Hours off"
+            />
+            <NumberInput
+              id="festivities_per_year"
+              value={festivitiesPerYear}
+              setValue={setFestivitiesPerYear}
+              labelTemplate="{value} festive days/year"
+              placeholder="Festivities"
             />
           </Grid>
         </div>
