@@ -1,24 +1,55 @@
 import type { Component } from "solid-js";
-import { createSignal, createMemo } from "solid-js";
+import { createSignal, For } from "solid-js";
 import Slider from "./components/Slider";
 import NumberInput from "./components/NumberInput";
 import Grid from "./components/Grid";
+import Table from "./components/Table";
 
 const App: Component = () => {
-  const currency = "$";
+  const currency = "EUR"; // TODO dropdrown
+  const locale = undefined;
+  const timeDecimalDigits = 2;
 
-  const [workingHoursDay, setWorkingHoursDay] = createSignal(8);
-  const [daysPerWeek, setDaysPerWeek] = createSignal(5);
-  const [overtimeHours, setOvertimeHours] = createSignal(5);
-  const [daysOff, setDaysOff] = createSignal(25);
-  const [timeOff, setTimeOff] = createSignal(0);
+  const getCurrencySymbol = (fmt) => {
+    const parts = fmt.formatToParts(0);
+    const symbol = parts.find((p) => p.type === "currency")?.value;
+    return symbol;
+  };
+
+  const timeFormatter = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: timeDecimalDigits,
+    maximumFractionDigits: timeDecimalDigits,
+  });
+  const currencyFormatter = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  });
+  const currencyFormatterWithCode = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+    currencyDisplay: "code",
+  });
+  const currencyFormatterWithNoSymbol = {
+    format(number: number) {
+      return currencyFormatterWithCode
+        .format(number)
+        .replaceAll(new RegExp(currency, "g"), "");
+    },
+  };
+  const currencySymbol = getCurrencySymbol(currencyFormatter);
+
+  const [workingHoursPerDay, setWorkingHoursPerDay] = createSignal(8);
+  const [workingDaysPerWeek, setWorkingDaysPerWeek] = createSignal(5);
+  const [overtimeHoursPerWeek, setOvertimeHoursPerWeek] = createSignal(5);
+  const [daysOffPerYear, setDaysOffPerYear] = createSignal(25);
+  const [timeOffPerYear, setTimeOffPerYear] = createSignal(0);
 
   const [yearlySalary, setYearlySalary] = createSignal(42000);
   const [monthsPerYear, setMonthsPerYear] = createSignal(12);
   const [yearlyBonus, setYearlyBonus] = createSignal(0);
-  const [overtimePayHour, setOvertimePayHour] = createSignal(0);
+  const [overtimePayPerHour, setOvertimePayPerHour] = createSignal(0);
 
-  const monthlySalary = createMemo(() => yearlySalary() / monthsPerYear());
+  const monthlySalary = () => yearlySalary() / monthsPerYear();
 
   const setMonthlySalary = (value: number | ((prev: number) => number)) => {
     const newValue =
@@ -27,103 +58,182 @@ const App: Component = () => {
     return newValue;
   };
 
-  const weeklyHours = createMemo(() => workingHoursDay() * daysPerWeek());
+  const weeklyHours = () => workingHoursPerDay() * workingDaysPerWeek();
+
+  const daysPerYear = 365.25;
+  const daysPerWeek = 7;
+
+  const workingDaysPerYear = () =>
+    (daysPerYear * workingDaysPerWeek()) / daysPerWeek;
+  const actualWorkingDaysPerYear = () =>
+    workingDaysPerYear() - daysOffPerYear();
+  const workingHoursPerYear = () =>
+    actualWorkingDaysPerYear() * workingHoursPerDay() - timeOffPerYear();
+  const overtimeHoursPerYear = () =>
+    (actualWorkingDaysPerYear() / workingDaysPerWeek()) *
+    overtimeHoursPerWeek();
+  const totalWorkingHoursPerYear = () =>
+    workingHoursPerYear() + overtimeHoursPerYear();
+
+  const yearlyOvertimeIncome = () =>
+    overtimeHoursPerYear() * overtimePayPerHour();
+  const totalYearlyIncome = () =>
+    yearlySalary() + yearlyBonus() + yearlyOvertimeIncome();
+
+  const actualIncomePerHour = () => totalYearlyIncome() / workingHoursPerYear();
+
+  const timeMetrics = [
+    ["", ""],
+    ["days", () => daysPerYear],
+    ["working days", workingDaysPerYear],
+    ["actual working days", actualWorkingDaysPerYear],
+    ["working hours", workingHoursPerYear],
+    ["overtime working hours", overtimeHoursPerYear],
+    ["total working hours", totalWorkingHoursPerYear],
+  ];
+  const detailedBreakdown = [
+    ["", "hours/year", `${currencySymbol}/year`, `${currencySymbol}/hour`],
+    [
+      "base",
+      workingHoursPerYear,
+      yearlySalary,
+      () => yearlySalary() / workingHoursPerYear(),
+    ],
+    ["bonus", "-", yearlyBonus, "-"],
+    [
+      "overtime",
+      overtimeHoursPerYear,
+      yearlyOvertimeIncome,
+      overtimePayPerHour,
+    ],
+    ["total", totalWorkingHoursPerYear, totalYearlyIncome, actualIncomePerHour],
+  ];
 
   return (
     <>
       <h1>Money is time 💸 = ⏳</h1>
       <article>
-        <h3>Net income</h3>
-        <Grid columns={3}>
-          <NumberInput
-            id="yearly_salary"
-            value={yearlySalary}
-            setValue={setYearlySalary}
-            labelTemplate={`salary of {value} ${currency}/year`}
-            placeholder="Yearly salary"
+        <div>
+          <h3>Net income 💵</h3>
+          <Grid columns={3}>
+            <NumberInput
+              id="yearly_salary"
+              value={yearlySalary}
+              setValue={setYearlySalary}
+              labelTemplate={`salary of {value} ${currencySymbol}/year`}
+              placeholder="Yearly salary"
+            />
+            <NumberInput
+              id="monthly_salary"
+              value={monthlySalary}
+              setValue={setMonthlySalary}
+              labelTemplate={`salary of {value} ${currencySymbol}/month`}
+              placeholder="Monthly salary"
+            />
+            <NumberInput
+              id="months_per_year"
+              value={monthsPerYear}
+              setValue={setMonthsPerYear}
+              labelTemplate="for {value} months/year"
+              placeholder="Months per year"
+            />
+            <NumberInput
+              id="yearly_bonus"
+              value={yearlyBonus}
+              setValue={setYearlyBonus}
+              labelTemplate={`bonus of {value} ${currencySymbol}/year`}
+              placeholder="Yearly bonus"
+            />
+            <NumberInput
+              id="overtime_pay_hour"
+              value={overtimePayPerHour}
+              setValue={setOvertimePayPerHour}
+              labelTemplate={`overtime paid {value} ${currencySymbol}/hour`}
+              placeholder="Overtime pay/hour"
+            />
+          </Grid>
+        </div>
+        <div>
+          <h3>Work time 🕒</h3>
+          <Grid columns={2}>
+            <Slider
+              id="working_hours_day"
+              value={workingHoursPerDay}
+              setValue={setWorkingHoursPerDay}
+              min={0}
+              max={24}
+              step={0.25}
+              labelTemplate="{value} hours/day"
+            />
+            <Slider
+              id="days_per_week"
+              value={workingDaysPerWeek}
+              setValue={setWorkingDaysPerWeek}
+              min={1}
+              max={7}
+              step={1}
+              labelTemplate="{value} days/week"
+            />
+            <Slider
+              id="working_hours_week"
+              value={weeklyHours}
+              min={0}
+              max={168}
+              step={0.25}
+              labelTemplate="{value} hours/week"
+              disabled
+            />
+            <Slider
+              id="overtime_hours_week"
+              value={overtimeHoursPerWeek}
+              setValue={setOvertimeHoursPerWeek}
+              min={0}
+              max={42}
+              step={0.25}
+              labelTemplate="{value} overtime hours/week"
+            />
+            <NumberInput
+              id="days_off"
+              value={daysOffPerYear}
+              setValue={setDaysOffPerYear}
+              labelTemplate="{value} days off/year"
+              placeholder="Days off"
+            />
+            <NumberInput
+              id="time_off"
+              value={timeOffPerYear}
+              setValue={setTimeOffPerYear}
+              labelTemplate="{value} hours off/year"
+              placeholder="Hours off"
+            />
+          </Grid>
+        </div>
+      </article>
+
+      <article>
+        <div>
+          <h3>Time metrics 🕰</h3>
+          <Table
+            data={timeMetrics}
+            columnFormat={[undefined, timeFormatter]}
+            columnAlign={["left", "right"]}
+            class="striped"
           />
-          <NumberInput
-            id="monthly_salary"
-            value={monthlySalary}
-            setValue={setMonthlySalary}
-            labelTemplate={`salary of {value} ${currency}/month`}
-            placeholder="Monthly salary"
+        </div>
+        <div>
+          <h3>Detailed breakdown 🧩</h3>
+          <Table
+            data={detailedBreakdown}
+            columnFormat={[
+              undefined,
+              timeFormatter,
+              currencyFormatterWithNoSymbol,
+              currencyFormatterWithNoSymbol,
+            ]}
+            columnAlign={["left", "right", "right", "right"]}
+            class="striped"
           />
-          <NumberInput
-            id="months_per_year"
-            value={monthsPerYear}
-            setValue={setMonthsPerYear}
-            labelTemplate="for {value} months/year"
-            placeholder="Months per year"
-          />
-          <NumberInput
-            id="yearly_bonus"
-            value={yearlyBonus}
-            setValue={setYearlyBonus}
-            labelTemplate={`bonus of {value} ${currency}/year`}
-            placeholder="Yearly bonus"
-          />
-          <NumberInput
-            id="overtime_pay_hour"
-            value={overtimePayHour}
-            setValue={setOvertimePayHour}
-            labelTemplate={`overtime paid {value} ${currency}/hour`}
-            placeholder="Overtime pay/hour"
-          />
-        </Grid>
-        <h3>Work time</h3>
-        <Grid columns={2}>
-          <Slider
-            id="working_hours_day"
-            value={workingHoursDay}
-            setValue={setWorkingHoursDay}
-            min={0}
-            max={24}
-            step={0.25}
-            labelTemplate="{value} hours/day"
-          />
-          <Slider
-            id="days_per_week"
-            value={daysPerWeek}
-            setValue={setDaysPerWeek}
-            min={0}
-            max={7}
-            step={1}
-            labelTemplate="{value} days/week"
-          />
-          <Slider
-            id="working_hours_week"
-            value={weeklyHours}
-            min={0}
-            max={168}
-            step={0.25}
-            labelTemplate="{value} hours/week"
-            disabled
-          />
-          <Slider
-            id="overtime_hours_week"
-            value={overtimeHours}
-            setValue={setOvertimeHours}
-            min={0}
-            max={42}
-            step={0.25}
-            labelTemplate="{value} overtime hours/week"
-          />
-          <NumberInput
-            id="days_off"
-            value={daysOff}
-            setValue={setDaysOff}
-            labelTemplate="{value} days off"
-            placeholder="Days off"
-          />
-          <NumberInput
-            id="time_off"
-            value={timeOff}
-            setValue={setTimeOff}
-            labelTemplate="{value} hours off"
-            placeholder="Hours off"
-          />
-        </Grid>
+        </div>
       </article>
     </>
   );
