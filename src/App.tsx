@@ -307,26 +307,30 @@ const App: Component = () => {
         </div>
         <div>
           <h3>Time metrics 🕰</h3>
-          <Table
-            data={timeMetrics}
-            columnFormat={[undefined, timeFormatter]}
-            columnAlign={["left", "right"]}
-            class="striped"
-          />
+          <div class="overflow-auto">
+            <Table
+              data={timeMetrics}
+              columnFormat={[undefined, timeFormatter]}
+              columnAlign={["left", "right"]}
+              class="striped"
+            />
+          </div>
         </div>
         <div>
           <h3>Detailed breakdown 🧩</h3>
-          <Table
-            data={detailedBreakdown}
-            columnFormat={[
-              undefined,
-              timeFormatter,
-              currencyFormatterWithNoSymbol,
-              currencyFormatterWithNoSymbol,
-            ]}
-            columnAlign={["left", "right", "right", "right"]}
-            class="striped"
-          />
+          <div class="overflow-auto">
+            <Table
+              data={detailedBreakdown}
+              columnFormat={[
+                undefined,
+                timeFormatter,
+                currencyFormatterWithNoSymbol,
+                currencyFormatterWithNoSymbol,
+              ]}
+              columnAlign={["left", "right", "right", "right"]}
+              class="striped"
+            />
+          </div>
         </div>
       </article>
     </>
