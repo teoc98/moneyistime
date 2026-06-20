@@ -1,13 +1,16 @@
 import type { Component } from "solid-js";
 import { For } from "solid-js";
 
-interface ColumnFormat<T> {
-  format?: (value: T) => string;
+type ColumnAlignment = "left" | "center" | "right";
+
+interface ColumnFormat {
+  format?: (value: number) => string;
 }
 
-interface TableProps<T> {
-  data: Array<Array<T>>;
+interface TableProps {
+  data: Array<Array<string | (() => number)>>;
   columnFormat?: Array<ColumnFormat | undefined>;
+  columnAlign?: Array<ColumnAlignment | undefined>;
   class?: string;
 }
 
@@ -28,13 +31,20 @@ const Table: Component<TableProps> = (props) => {
   };
   const nCols = Math.max(...props.data.map((row) => row.length));
 
+  const getCellStyle = (colIndex: number) => {
+    const align = props.columnAlign?.[colIndex];
+    return align ? { "text-align": align } : {};
+  };
+
   return (
     <table class={`${props.class ?? ""}`}>
       <thead>
         <tr>
           <For each={props.data[0]}>
             {(cell, cellIndex) => (
-              <th scope="col">{renderValue(cell, cellIndex())}</th>
+              <th scope="col" style={getCellStyle(cellIndex())}>
+                {renderValue(cell, cellIndex())}
+              </th>
             )}
           </For>
         </tr>
@@ -46,9 +56,13 @@ const Table: Component<TableProps> = (props) => {
               <For each={extendArray(row, nCols)}>
                 {(cell, cellIndex) =>
                   cellIndex() === 0 ? (
-                    <th scope="row">{renderValue(cell, cellIndex())}</th>
+                    <th scope="row" style={getCellStyle(cellIndex())}>
+                      {renderValue(cell, cellIndex())}
+                    </th>
                   ) : (
-                    <td>{renderValue(cell, cellIndex())}</td>
+                    <td style={getCellStyle(cellIndex())}>
+                      {renderValue(cell, cellIndex())}
+                    </td>
                   )
                 }
               </For>
