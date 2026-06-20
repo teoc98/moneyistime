@@ -94,8 +94,8 @@ const App: Component = () => {
 
   const urlParams = parseFromHash();
   for (const key in signals) {
-    if (urlParams[key as keyof typeof urlParams])
-      signals[key][1](urlParams[key as keyof typeof urlParams]);
+    const value = urlParams[key as keyof typeof urlParams];
+    if (value !== null && value !== undefined) signals[key][1](value);
   }
 
   const updateHash = () => {
