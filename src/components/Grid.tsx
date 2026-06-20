@@ -3,11 +3,14 @@ import { For, children } from "solid-js";
 
 interface GridProps {
   columns: number;
+  wrap?: boolean;
   children: JSX.Element;
 }
 
 const Grid: Component<GridProps> = (props): JSX.Element => {
   const resolved = children(() => props.children);
+  const tag = () => props.tag || "div";
+  const wrap = () => props.wrap !== false;
 
   const rows = () => {
     const arr = resolved.toArray();
@@ -20,11 +23,15 @@ const Grid: Component<GridProps> = (props): JSX.Element => {
 
   return (
     <For each={rows()}>
-      {(row) => (
-        <div class="grid">
-          <For each={row}>{(child) => <div>{child}</div>}</For>
-        </div>
-      )}
+      {(row) => {
+        return (
+          <tag class="grid">
+            <For each={row}>
+              {(child) => (wrap() ? <div>{child}</div> : child)}
+            </For>
+          </tag>
+        );
+      }}
     </For>
   );
 };
