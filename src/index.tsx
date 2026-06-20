@@ -2,6 +2,7 @@
 import { render } from "solid-js/web";
 import "solid-devtools";
 import "@picocss/pico";
+import "./styles/pico-custom.css";
 
 import App from "./App";
 
