@@ -144,7 +144,8 @@ const App: Component = () => {
   const totalYearlyIncome = () =>
     yearlySalary() + yearlyBonus() + yearlyOvertimeIncome();
 
-  const actualIncomePerHour = () => totalYearlyIncome() / totalWorkingHoursPerYear();
+  const actualIncomePerHour = () =>
+    totalYearlyIncome() / totalWorkingHoursPerYear();
 
   const timeMetrics = [
     ["", ""],
