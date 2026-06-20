@@ -128,7 +128,7 @@ const App: Component = () => {
   const daysPerWeek = 7;
 
   const workingDaysPerYear = () =>
-    (daysPerYear * workingDaysPerWeek()) / daysPerWeek - festivitiesPerYear();
+    ((daysPerYear - festivitiesPerYear()) * workingDaysPerWeek()) / daysPerWeek;
   const actualWorkingDaysPerYear = () =>
     workingDaysPerYear() - daysOffPerYear();
   const workingHoursPerYear = () =>
@@ -144,7 +144,7 @@ const App: Component = () => {
   const totalYearlyIncome = () =>
     yearlySalary() + yearlyBonus() + yearlyOvertimeIncome();
 
-  const actualIncomePerHour = () => totalYearlyIncome() / workingHoursPerYear();
+  const actualIncomePerHour = () => totalYearlyIncome() / totalWorkingHoursPerYear();
 
   const timeMetrics = [
     ["", ""],
