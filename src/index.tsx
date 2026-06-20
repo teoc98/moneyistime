@@ -1,7 +1,7 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 import "solid-devtools";
-import "@picocss/pico";
+import "@picocss/pico/css/pico.jade.min.css";
 import "./styles/pico-custom.css";
 
 import App from "./App";
