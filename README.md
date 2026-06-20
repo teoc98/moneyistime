@@ -1,36 +1,38 @@
-## Usage
+# Money is Time
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+A calculator that converts your salary and work hours into an hourly rate, helping you understand the true value of your money and time.
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+## Features
+
+- **Income input**: Enter yearly/monthly salary, bonus, and overtime pay
+- **Work schedule**: Configure hours per day, days per week, days off, and festive days per year
+- **Real-time conversion**: See exactly how much 1 hour of your time is worth
+- **Time metrics**: View total working days and hours per year
+- **Detailed breakdown**: Analyze income from base salary, bonus, and overtime separately
+- **Shareable URLs**: State is stored in the URL hash for easy sharing
+
+## Tech stack
+
+- [SolidJS](https://solidjs.com) - UI framework
+- [Pico CSS](https://picocss.com) - CSS framework
+- [Vite](https://vitejs.dev) - Build tool
+- TypeScript
+
+## Getting started
 
 ```bash
-$ npm install # or pnpm install or yarn install
+pnpm install
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+## Commands
 
-## Available Scripts
+| Command       | Description               |
+| ------------- | ------------------------- |
+| `pnpm dev`    | Start development server  |
+| `pnpm build`  | Build for production      |
+| `pnpm serve`  | Preview production build  |
+| `pnpm format` | Format code with Prettier |
 
-In the project directory, you can run:
+## License
 
-### `npm run dev` or `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
-
-## This project was created with the [Solid CLI](https://github.com/solidjs-community/solid-cli)
+MIT
