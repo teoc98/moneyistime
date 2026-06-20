@@ -20,6 +20,11 @@ const App: Component = () => {
     minimumFractionDigits: timeDecimalDigits,
     maximumFractionDigits: timeDecimalDigits,
   });
+  const hourFormatter = new Intl.NumberFormat(locale, {
+    style: "unit",
+    unit: "hour",
+    unitDisplay: "short", // "short", "narrow", or "long"
+  });
   const currencyFormatter = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: currency,
@@ -122,6 +127,7 @@ const App: Component = () => {
               setValue={setYearlySalary}
               labelTemplate={`salary of {value} ${currencySymbol}/year`}
               placeholder="Yearly salary"
+              formatter={currencyFormatterWithNoSymbol}
             />
             <NumberInput
               id="monthly_salary"
@@ -129,6 +135,7 @@ const App: Component = () => {
               setValue={setMonthlySalary}
               labelTemplate={`salary of {value} ${currencySymbol}/month`}
               placeholder="Monthly salary"
+              formatter={currencyFormatterWithNoSymbol}
             />
             <NumberInput
               id="months_per_year"
@@ -143,6 +150,7 @@ const App: Component = () => {
               setValue={setYearlyBonus}
               labelTemplate={`bonus of {value} ${currencySymbol}/year`}
               placeholder="Yearly bonus"
+              formatter={currencyFormatterWithNoSymbol}
             />
             <NumberInput
               id="overtime_pay_hour"
@@ -150,6 +158,7 @@ const App: Component = () => {
               setValue={setOvertimePayPerHour}
               labelTemplate={`overtime paid {value} ${currencySymbol}/hour`}
               placeholder="Overtime pay/hour"
+              formatter={currencyFormatterWithNoSymbol}
             />
           </Grid>
         </div>
@@ -164,6 +173,7 @@ const App: Component = () => {
               max={24}
               step={0.25}
               labelTemplate="{value} hours/day"
+              formatter={timeFormatter}
             />
             <Slider
               id="days_per_week"
@@ -182,6 +192,7 @@ const App: Component = () => {
               step={0.25}
               labelTemplate="{value} hours/week"
               disabled
+              formatter={timeFormatter}
             />
             <Slider
               id="overtime_hours_week"
@@ -191,6 +202,7 @@ const App: Component = () => {
               max={42}
               step={0.25}
               labelTemplate="{value} overtime hours/week"
+              formatter={timeFormatter}
             />
             <NumberInput
               id="days_off"
@@ -211,6 +223,18 @@ const App: Component = () => {
       </article>
 
       <article>
+        <div>
+          <h3>Conversion 💱</h3>
+          <div
+            id="conversion"
+            style={{ "text-align": "center", padding: "1rem 0 2rem 0" }}
+          >
+            <span style={{ "font-size": "2rem", "font-weight": "bold" }}>
+              {hourFormatter.format(1)} ={" "}
+              {currencyFormatter.format(actualIncomePerHour())}
+            </span>
+          </div>
+        </div>
         <div>
           <h3>Time metrics 🕰</h3>
           <Table
