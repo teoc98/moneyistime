@@ -1,9 +1,30 @@
 import type { Component } from "solid-js";
-import { createSignal, For } from "solid-js";
+import { createSignal, createEffect, For, onMount } from "solid-js";
 import Slider from "./components/Slider";
 import NumberInput from "./components/NumberInput";
 import Grid from "./components/Grid";
 import Table from "./components/Table";
+
+const serializeToHash = (values: Record<string, number>) => {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(values)) {
+    params.set(key, String(value));
+  }
+  return params.toString();
+};
+
+const parseFromHash = (): Record<string, number> => {
+  const hash = window.location.hash.slice(1);
+  const params = new URLSearchParams(hash);
+  const result: Record<string, number> = {};
+  for (const [key, value] of params) {
+    const num = Number(value);
+    if (!isNaN(num)) {
+      result[key] = num;
+    }
+  }
+  return result;
+};
 
 const App: Component = () => {
   const currency = "EUR"; // TODO dropdrown
@@ -54,6 +75,43 @@ const App: Component = () => {
   const [monthsPerYear, setMonthsPerYear] = createSignal(12);
   const [yearlyBonus, setYearlyBonus] = createSignal(0);
   const [overtimePayPerHour, setOvertimePayPerHour] = createSignal(0);
+
+  const signals: Record<
+    string,
+    [() => number, (value: number | ((prev: number) => number)) => void]
+  > = {
+    workingHoursPerDay: [workingHoursPerDay, setWorkingHoursPerDay],
+    workingDaysPerWeek: [workingDaysPerWeek, setWorkingDaysPerWeek],
+    overtimeHoursPerWeek: [overtimeHoursPerWeek, setOvertimeHoursPerWeek],
+    daysOffPerYear: [daysOffPerYear, setDaysOffPerYear],
+    timeOffPerYear: [timeOffPerYear, setTimeOffPerYear],
+    festivitiesPerYear: [festivitiesPerYear, setFestivitiesPerYear],
+    yearlySalary: [yearlySalary, setYearlySalary],
+    monthsPerYear: [monthsPerYear, setMonthsPerYear],
+    yearlyBonus: [yearlyBonus, setYearlyBonus],
+    overtimePayPerHour: [overtimePayPerHour, setOvertimePayPerHour],
+  };
+
+  const urlParams = parseFromHash();
+  for (const key in signals) {
+    if (urlParams[key as keyof typeof urlParams])
+      signals[key][1](urlParams[key as keyof typeof urlParams]);
+  }
+
+  const updateHash = () => {
+    const values: Record<string, number> = {};
+    for (const key in signals) {
+      values[key] = signals[key][0]();
+    }
+    window.location.hash = serializeToHash(values);
+  };
+
+  for (const key in signals) {
+    createEffect(() => {
+      signals[key][0]();
+      updateHash();
+    });
+  }
 
   const monthlySalary = () => yearlySalary() / monthsPerYear();
 
